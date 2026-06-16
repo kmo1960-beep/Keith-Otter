@@ -6,12 +6,13 @@ Writes results to scripts/calendar_events.json for the agenda builder.
 
 import os
 import json
+import sys
 import datetime
 import pytz
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 
-# ── Configuration ──────────────────────────────────────────────────────────────
+# ── Configuration ───────────────────────────────────────────────────────────
 SERVICE_ACCOUNT_FILE = "scripts/service_account.json"
 CALENDAR_ID = os.environ.get("GCAL_CALENDAR_ID", "primary")
 TIMEZONE = "America/Los_Angeles"
@@ -19,10 +20,27 @@ OUTPUT_FILE = "scripts/calendar_events.json"
 
 SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
 
-# ── Auth ───────────────────────────────────────────────────────────────────────
-credentials = service_account.Credentials.from_service_account_file(
-    SERVICE_ACCOUNT_FILE, scopes=SCOPES
-)
+# ── Auth ────────────────────────────────────────────────────────────
+if not os.path.exists(SERVICE_ACCOUNT_FILE):
+    print(f"ERROR: Service account file not found at {SERVICE_ACCOUNT_FILE}")
+    sys.exit(1)
+
+with open(SERVICE_ACCOUNT_FILE, 'r') as f:
+    content = f.read().strip()
+    if not content:
+        print(f"ERROR: Service account file is empty. Make sure GCAL_SERVICE_ACCOUNT_JSON secret is set.")
+        sys.exit(1)
+
+try:
+    credentials = service_account.Credentials.from_service_account_file(
+        SERVICE_ACCOUNT_FILE, scopes=SCOPES
+    )
+except json.JSONDecodeError as e:
+    print(f"ERROR: Service account file contains invalid JSON: {e}")
+    sys.exit(1)
+except Exception as e:
+    print(f"ERROR: Failed to load credentials: {e}")
+    sys.exit(1)
 
 service = build("calendar", "v3", credentials=credentials, cache_discovery=False)
 
@@ -39,7 +57,7 @@ print(f"Fetching calendar events for {now_local.strftime('%A, %B %d, %Y')}")
 print(f"  Range: {time_min}  →  {time_max}")
 print(f"  Calendar ID: {CALENDAR_ID}")
 
-# ── Fetch events ───────────────────────────────────────────────────────────────
+# ── Fetch events ──────────────────────────────────────────────────────────
 events_result = service.events().list(
     calendarId=CALENDAR_ID,
     timeMin=time_min,
