@@ -1,0 +1,14 @@
+# fetch_calendar.py
+# Calendar integration disabled — returns empty data to keep pipeline running
+
+import json
+
+calendar_data = {
+    "events": [],
+    "summary": "No calendar events loaded."
+}
+
+with open("calendar_output.json", "w") as f:
+    json.dump(calendar_data, f)
+
+print("Calendar step skipped — no events.")
