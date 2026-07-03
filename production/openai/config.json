@@ -1,0 +1,6 @@
+{
+  "model": "gpt-5-mini",
+  "response_format": "json",
+  "temperature": 0.2,
+  "notes": "Use for Zapier workflows and structured JSON output"
+}
