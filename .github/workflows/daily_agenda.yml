@@ -5,7 +5,14 @@ on:
     # Runs at 6:00 AM PDT (13:00 UTC) every day
     # PDT = UTC-7, so 6:00 AM PDT = 13:00 UTC
     - cron: '0 13 * * *'
-  workflow_dispatch:   # Allows manual trigger from GitHub Actions UI
+  workflow_dispatch:   # Manual trigger from GitHub Actions UI
+    inputs:
+      triggered_by:
+        description: 'Who triggered this? (claude, chatgpt, manual)'
+        required: false
+        default: 'manual'
+  repository_dispatch:  # MCP / API trigger from Claude or ChatGPT
+    types: [run-daily-agenda]
 
 jobs:
   build-agenda:
@@ -60,3 +67,19 @@ jobs:
           git add agenda/daily_agenda.txt
           git diff --cached --quiet || git commit -m "📅 Daily agenda update: $(date +'%Y-%m-%d')"
           git push
+
+      - name: Notify n8n MCP on completion
+        if: always()
+        env:
+          N8N_WEBHOOK_URL: ${{ secrets.N8N_WEBHOOK_URL }}
+        run: |
+          curl -s -X POST "$N8N_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"workflow\": \"daily_agenda\",
+              \"status\": \"${{ job.status }}\",
+              \"triggered_by\": \"${{ github.event.inputs.triggered_by || github.event_name }}\",
+              \"date\": \"$(date +'%Y-%m-%d')\",
+              \"repo\": \"${{ github.repository }}\",
+              \"agenda_url\": \"https://github.com/${{ github.repository }}/blob/main/agenda/daily_agenda.txt\"
+            }" || echo "n8n notification skipped - webhook not configured"
