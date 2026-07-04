@@ -5,5 +5,5 @@
     "token_source": "n8n Settings > Instance-level MCP > Connection details > Access Token tab",
     "setup_path": "ChatGPT > Explore GPTs > Create > Configure > Actions > Add action"
   },
-  "notes": "Paste your n8n Access Token as the Bearer Token in ChatGPT Actions auth settings. Keep token out of GitHub."
+  "notes": "Paste your n8n Access Token as Bearer Token in ChatGPT Actions auth settings. Keep token out of GitHub."
 }
