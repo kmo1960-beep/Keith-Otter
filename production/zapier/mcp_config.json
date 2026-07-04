@@ -1,0 +1,13 @@
+{
+  "claude": {
+    "setup": "Go to mcp.zapier.com > New MCP Server > select Claude > name it > Create",
+    "connect": "Follow instructions on the Connect tab at mcp.zapier.com",
+    "note": "Must be Claude organization owner to add MCP servers"
+  },
+  "chatgpt": {
+    "setup": "Go to mcp.zapier.com > New MCP Server > select ChatGPT > name it > Create",
+    "connect": "Follow instructions on the Connect tab at mcp.zapier.com",
+    "developer_mode": true,
+    "note": "Enable Developer Mode in ChatGPT first. Manually refresh Zapier Connector when tools change."
+  }
+}
