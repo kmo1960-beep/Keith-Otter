@@ -3,5 +3,9 @@
   "location": "La Quinta, CA",
   "owner": "Keith",
   "timezone": "America/Los_Angeles",
-  "role": "Restaurant Operations Manager"
+  "role": "Restaurant Operations Manager",
+  "n8n": {
+    "base_url": "https://app.n8n.cloud/kmo1960",
+    "mcp_endpoint": "https://app.n8n.cloud/kmo1960/mcp-server/http"
+  }
 }
