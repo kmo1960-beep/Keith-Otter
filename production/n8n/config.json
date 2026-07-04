@@ -1,0 +1,6 @@
+{
+  "base_url": "https://app.n8n.cloud/kmo1960",
+  "mcp_endpoint": "https://app.n8n.cloud/kmo1960/mcp-server/http",
+  "mcp_enabled": true,
+  "notes": "Enable workflows in n8n Settings > Instance-level MCP > toggle Available in MCP per workflow"
+}
