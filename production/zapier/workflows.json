@@ -1,5 +1,15 @@
 {
   "status": "active",
-  "notes": "Verified working Zapier workflows only",
+  "mcp": {
+    "setup_url": "https://mcp.zapier.com",
+    "mcp_endpoint": "https://mcp.zapier.com/api/v1/connect",
+    "auth_method": "Bearer Token",
+    "transport": "Streamable HTTP",
+    "claude_server_name": "Zapier MCP - Claude",
+    "chatgpt_server_name": "Zapier MCP - ChatGPT",
+    "token_note": "Generate token at mcp.zapier.com > Connect tab > Generate token. Save immediately - only shown once.",
+    "chatgpt_note": "MCP tools only work in ChatGPT Developer Mode. Refresh connector after adding new tools."
+  },
+  "notes": "Each AI client needs its own separate MCP server at mcp.zapier.com",
   "workflows": []
 }
