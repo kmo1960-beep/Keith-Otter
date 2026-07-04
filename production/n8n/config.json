@@ -2,5 +2,98 @@
   "base_url": "https://app.n8n.cloud/kmo1960",
   "mcp_endpoint": "https://app.n8n.cloud/kmo1960/mcp-server/http",
   "mcp_enabled": true,
-  "notes": "Enable workflows in n8n Settings > Instance-level MCP > toggle Available in MCP per workflow"
+  "credentials": {
+    "ai_services": [
+      {
+        "name": "OpenAI - Fortune's Kitchen",
+        "n8n_search": "OpenAI",
+        "key_source": "https://platform.openai.com/api-keys",
+        "stored_in_n8n": true,
+        "note": "Used for GPT-5 Mini calls and ChatGPT agent actions"
+      },
+      {
+        "name": "Anthropic - Fortune's Kitchen",
+        "n8n_search": "Anthropic",
+        "key_source": "https://console.anthropic.com/settings/keys",
+        "stored_in_n8n": true,
+        "note": "Used for Claude reasoning and review steps"
+      }
+    ],
+    "automation": [
+      {
+        "name": "Zapier - Fortune's Kitchen",
+        "n8n_search": "Zapier",
+        "key_source": "https://zapier.com/app/developer",
+        "stored_in_n8n": true,
+        "note": "Used to trigger and receive Zapier webhook events"
+      },
+      {
+        "name": "GitHub - Fortune's Kitchen",
+        "n8n_search": "GitHub",
+        "key_source": "https://github.com/settings/tokens",
+        "stored_in_n8n": true,
+        "note": "Used to trigger repository_dispatch on Keith-Otter repo"
+      }
+    ],
+    "restaurant_apps": [
+      {
+        "name": "Gmail - Fortune's Kitchen",
+        "n8n_search": "Gmail OAuth2",
+        "key_source": "Google login in n8n",
+        "stored_in_n8n": true,
+        "note": "Watches for vendor invoices and sends approval emails"
+      },
+      {
+        "name": "Google Calendar - Fortune's Kitchen",
+        "n8n_search": "Google Calendar",
+        "key_source": "Same Google login or GCAL_SERVICE_ACCOUNT_JSON secret",
+        "stored_in_n8n": true,
+        "note": "Used by daily agenda workflow"
+      },
+      {
+        "name": "Google Sheets - Fortune's Kitchen",
+        "n8n_search": "Google Sheets",
+        "key_source": "Same Google login",
+        "stored_in_n8n": true,
+        "note": "Used for logging invoices and workflow results"
+      },
+      {
+        "name": "QuickBooks - Fortune's Kitchen",
+        "n8n_search": "QuickBooks",
+        "key_source": "QuickBooks login in n8n",
+        "stored_in_n8n": true,
+        "note": "Used for invoice approval and record updates"
+      }
+    ],
+    "webhooks": [
+      {
+        "name": "Daily Agenda Webhook",
+        "type": "n8n Webhook node",
+        "direction": "inbound",
+        "note": "Create Webhook node in n8n — copy URL — paste into GitHub Secret N8N_WEBHOOK_URL",
+        "github_secret": "N8N_WEBHOOK_URL"
+      },
+      {
+        "name": "Zapier Inbound Webhook",
+        "type": "n8n Webhook node",
+        "direction": "inbound",
+        "note": "Create Webhook node in n8n — give URL to Zapier as destination for parsed invoice JSON"
+      }
+    ]
+  },
+  "setup_order": [
+    "1. Gmail / Google — one login covers Calendar and Sheets",
+    "2. OpenAI",
+    "3. Anthropic",
+    "4. GitHub",
+    "5. QuickBooks",
+    "6. Zapier",
+    "7. Create Daily Agenda Webhook node — copy URL to GitHub Secret N8N_WEBHOOK_URL",
+    "8. Create Zapier Inbound Webhook node — give URL to Zapier"
+  ],
+  "security_rules": [
+    "Never store actual API keys in this file or anywhere in GitHub",
+    "All keys stored encrypted in n8n Credentials vault only",
+    "This file maps credential names and sources only"
+  ]
 }
