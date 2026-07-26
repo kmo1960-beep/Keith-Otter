@@ -20,6 +20,7 @@ This is what all AI tools should read first.
 | `production/n8n/` | n8n MCP URLs + full credentials map |
 | `production/perplexity/` | Perplexity configs |
 | `production/copilot/` | GitHub Copilot configs |
+| `production/email/` | Single shareable email handoff config |
 
 ### /r-and-d
 **Sandbox. Experiments only.**
