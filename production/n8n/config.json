@@ -32,7 +32,7 @@
         "n8n_search": "GitHub",
         "key_source": "https://github.com/settings/tokens",
         "stored_in_n8n": true,
-        "note": "Used to trigger repository_dispatch on Keith-Otter repo"
+        "note": "Used for Keith-Otter repository automation and repository_dispatch triggers"
       }
     ],
     "restaurant_apps": [
@@ -58,11 +58,27 @@
         "note": "Used for logging invoices and workflow results"
       },
       {
+        "name": "Google Drive - Fortune's Kitchen",
+        "n8n_search": "Google Drive",
+        "key_source": "Same Google login",
+        "stored_in_n8n": true,
+        "note": "Used to read and store files from My Drive"
+      },
+      {
         "name": "QuickBooks - Fortune's Kitchen",
         "n8n_search": "QuickBooks",
         "key_source": "QuickBooks login in n8n",
         "stored_in_n8n": true,
         "note": "Used for invoice approval and record updates"
+      }
+    ],
+    "data_services": [
+      {
+        "name": "Weather - Fortune's Kitchen",
+        "n8n_search": "HTTP Request",
+        "key_source": "https://openweathermap.org/api",
+        "stored_in_n8n": true,
+        "note": "Used to pull local weather conditions for daily briefs and planning"
       }
     ],
     "webhooks": [
@@ -82,14 +98,15 @@
     ]
   },
   "setup_order": [
-    "1. Gmail / Google — one login covers Calendar and Sheets",
+    "1. Gmail / Google — one login covers Email, Calendar, Sheets, and My Drive",
     "2. OpenAI",
     "3. Anthropic",
     "4. GitHub",
     "5. QuickBooks",
     "6. Zapier",
-    "7. Create Daily Agenda Webhook node — copy URL to GitHub Secret N8N_WEBHOOK_URL",
-    "8. Create Zapier Inbound Webhook node — give URL to Zapier"
+    "7. Weather provider (store API credential in n8n)",
+    "8. Create Daily Agenda Webhook node — copy URL to GitHub Secret N8N_WEBHOOK_URL",
+    "9. Create Zapier Inbound Webhook node — give URL to Zapier"
   ],
   "security_rules": [
     "Never store actual API keys in this file or anywhere in GitHub",
