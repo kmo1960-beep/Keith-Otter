@@ -21,6 +21,7 @@ This is what all AI tools should read first.
 | `production/perplexity/` | Perplexity configs |
 | `production/copilot/` | GitHub Copilot configs |
 | `production/email/` | Single shareable email handoff config |
+| `docs/idea-binder/` | Printable README and horizontal workflow diagram templates |
 
 ### /r-and-d
 **Sandbox. Experiments only.**
