@@ -20,6 +20,8 @@ This is what all AI tools should read first.
 | `production/n8n/` | n8n MCP URLs + full credentials map |
 | `production/perplexity/` | Perplexity configs |
 | `production/copilot/` | GitHub Copilot configs |
+| `production/email/` | Single shareable email handoff config |
+| `docs/idea-binder/` | Printable README and horizontal workflow diagram templates |
 
 ### /r-and-d
 **Sandbox. Experiments only.**
@@ -43,10 +45,19 @@ Do not use in live workflows.
 All API keys are stored **encrypted in n8n only** — never in this repo.
 This is the order to add them at `app.n8n.cloud/kmo1960` > Credentials.
 
-### Step 1 — Google (one login covers all three)
+### Included service coverage
+- Email: Gmail OAuth2
+- Weather: Weather provider API via n8n credential
+- AI: OpenAI + Anthropic
+- Google Calendar: Google Calendar credential
+- My Drive: Google Drive credential
+- Repo: GitHub credential for repository automation
+
+### Step 1 — Google (one login covers Email, Calendar, Sheets, and My Drive)
 - Gmail OAuth2 — `Gmail - Fortune's Kitchen`
 - Google Calendar — `Google Calendar - Fortune's Kitchen`
 - Google Sheets — `Google Sheets - Fortune's Kitchen`
+- Google Drive — `Google Drive - Fortune's Kitchen`
 
 ### Step 2 — OpenAI
 - Get key at: https://platform.openai.com/api-keys
@@ -58,7 +69,7 @@ This is the order to add them at `app.n8n.cloud/kmo1960` > Credentials.
 - n8n search: `Anthropic`
 - Name: `Anthropic - Fortune's Kitchen`
 
-### Step 4 — GitHub
+### Step 4 — GitHub (Repo access)
 - Get token at: https://github.com/settings/tokens
 - n8n search: `GitHub`
 - Name: `GitHub - Fortune's Kitchen`
@@ -73,13 +84,18 @@ This is the order to add them at `app.n8n.cloud/kmo1960` > Credentials.
 - n8n search: `Zapier`
 - Name: `Zapier - Fortune's Kitchen`
 
-### Step 7 — Daily Agenda Webhook
+### Step 7 — Weather
+- Get key at: https://openweathermap.org/api
+- n8n search: `HTTP Request` (or your weather provider credential)
+- Name: `Weather - Fortune's Kitchen`
+
+### Step 8 — Daily Agenda Webhook
 - Create a Webhook node in n8n
 - Copy the generated URL
 - Paste it into GitHub Secret: `N8N_WEBHOOK_URL`
 - Repo secrets: https://github.com/kmo1960-beep/Keith-Otter/settings/secrets/actions
 
-### Step 8 — Zapier Inbound Webhook
+### Step 9 — Zapier Inbound Webhook
 - Create a second Webhook node in n8n
 - Copy the generated URL
 - Paste it into Zapier as the destination for parsed invoice JSON
