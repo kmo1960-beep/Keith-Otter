@@ -6,6 +6,7 @@ Use these files to keep each AI idea documented in a printable, trackable format
 
 - `GIG_README_TEMPLATE.md` — copy this for each gig/idea.
 - `WORKFLOW_DIAGRAM_TEMPLATE.md` — horizontal n8n-style diagram blocks you can paste into each README.
+- `morning-brief-automation/README.md` — active gig record for Morning Brief Automation.
 
 ## Suggested workflow
 
