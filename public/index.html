@@ -2,17 +2,288 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Keith-Otter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Morning Brief" />
+  <title>🌅 Morning Brief</title>
   <style>
-    body { font-family: sans-serif; max-width: 600px; margin: 60px auto; padding: 20px; }
-    h1 { color: #2c3e50; }
-    p { color: #555; line-height: 1.6; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+      background: linear-gradient(160deg, #0f2027, #203a43, #2c5364);
+      min-height: 100vh;
+      color: #fff;
+      padding: 20px 16px 40px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 24px 0 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 20px;
+    }
+    .header .date {
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 6px;
+    }
+    .header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    .header .subtitle {
+      font-size: 13px;
+      color: rgba(255,255,255,0.4);
+      margin-top: 4px;
+    }
+
+    /* Cards */
+    .card {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 14px;
+      backdrop-filter: blur(10px);
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .card-icon {
+      font-size: 22px;
+      width: 36px;
+      height: 36px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card-title {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+    }
+
+    /* Weather */
+    .weather-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .weather-temp {
+      font-size: 48px;
+      font-weight: 200;
+      line-height: 1;
+    }
+    .weather-detail {
+      text-align: right;
+      font-size: 14px;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.7;
+    }
+    .weather-desc {
+      font-size: 16px;
+      color: rgba(255,255,255,0.8);
+      margin-top: 6px;
+    }
+
+    /* Calendar items */
+    .event-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .event-item:last-child { border-bottom: none; }
+    .event-time {
+      font-size: 12px;
+      font-weight: 600;
+      color: #5ac8fa;
+      min-width: 48px;
+      padding-top: 2px;
+    }
+    .event-title {
+      font-size: 15px;
+      line-height: 1.4;
+    }
+    .event-loc {
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      margin-top: 2px;
+    }
+
+    /* Email items */
+    .email-item {
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .email-item:last-child { border-bottom: none; }
+    .email-from {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.85);
+    }
+    .email-subject {
+      font-size: 14px;
+      color: rgba(255,255,255,0.6);
+      margin-top: 2px;
+    }
+
+    /* Tasks */
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      font-size: 15px;
+    }
+    .task-item:last-child { border-bottom: none; }
+    .task-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #30d158;
+      flex-shrink: 0;
+    }
+    .task-dot.urgent { background: #ff453a; }
+    .task-dot.normal { background: #ffd60a; }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      font-size: 11px;
+      color: rgba(255,255,255,0.2);
+      margin-top: 30px;
+      letter-spacing: 1px;
+    }
+
+    /* Placeholder text */
+    .placeholder {
+      font-size: 14px;
+      color: rgba(255,255,255,0.35);
+      font-style: italic;
+    }
   </style>
 </head>
 <body>
-  <h1>🦦 Keith-Otter</h1>
-  <p>Automation hub for Fortune's Kitchen — powered by n8n, GitHub Actions, and AI.</p>
-  <p>Services: Email · Weather · AI · Google Calendar · Google Drive · GitHub</p>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="date" id="today-date">Loading...</div>
+    <h1>☀️ Morning Brief</h1>
+    <div class="subtitle">Fortune's Kitchen and Bar · La Quinta, CA</div>
+  </div>
+
+  <!-- Weather -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">🌤️</div>
+      <div class="card-title">Weather — La Quinta, CA</div>
+    </div>
+    <div class="weather-row">
+      <div class="weather-temp" id="weather-temp">--°</div>
+      <div class="weather-detail" id="weather-detail">
+        High: --° · Low: --°<br>
+        Humidity: --%<br>
+        Wind: -- mph
+      </div>
+    </div>
+    <div class="weather-desc" id="weather-desc">Updating via n8n...</div>
+  </div>
+
+  <!-- Calendar -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">📅</div>
+      <div class="card-title">Today's Calendar</div>
+    </div>
+    <div id="calendar-events">
+      <div class="event-item">
+        <div class="event-time">9:00a</div>
+        <div>
+          <div class="event-title">Staff Prep Meeting</div>
+          <div class="event-loc">Fortune's Kitchen — Kitchen</div>
+        </div>
+      </div>
+      <div class="event-item">
+        <div class="event-time">11:00a</div>
+        <div>
+          <div class="event-title">Lunch Service Opens</div>
+          <div class="event-loc">Dining Room</div>
+        </div>
+      </div>
+      <div class="event-item">
+        <div class="event-time">5:00p</div>
+        <div>
+          <div class="event-title">Dinner Service</div>
+          <div class="event-loc">Full Restaurant</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Email Summary -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">✉️</div>
+      <div class="card-title">Email Summary</div>
+    </div>
+    <div id="email-items">
+      <div class="email-item">
+        <div class="email-from">n8n Automation</div>
+        <div class="email-subject placeholder">Waiting for today's email summary...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tasks -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">✅</div>
+      <div class="card-title">Today's Tasks</div>
+    </div>
+    <div>
+      <div class="task-item">
+        <div class="task-dot urgent"></div>
+        <div>Review overnight messages</div>
+      </div>
+      <div class="task-item">
+        <div class="task-dot normal"></div>
+        <div>Check inventory orders</div>
+      </div>
+      <div class="task-item">
+        <div class="task-dot"></div>
+        <div>Confirm weekend reservations</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    FORTUNE'S KITCHEN AND BAR · POWERED BY KEITH-OTTER + N8N<br>
+    github.com/kmo1960-beep/Keith-Otter
+  </div>
+
+  <script>
+    // Set today's date
+    const now = new Date();
+    const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('today-date').textContent = now.toLocaleDateString('en-US', opts);
+  </script>
+
 </body>
 </html>
