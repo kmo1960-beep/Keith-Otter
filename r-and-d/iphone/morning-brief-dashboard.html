@@ -2,7 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+
+  <!-- ── iOS Web App: makes it feel native when launched from Home Screen ── -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Morning Brief" />
+  <meta name="theme-color" content="#0d1117" />
+
+  <!-- ── App icon shown when user taps "Add to Home Screen" ── -->
+  <!-- A 180×180 orange "FK" icon encoded as SVG/base64 -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjQwIiBmaWxsPSIjMGQxMTE3Ii8+PHRleHQgeD0iOTAiIHk9IjExNSIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sc2Fucy1zZXJpZiIgZm9udC1zaXplPSI3MiIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iI2YwODgzZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Rks8L3RleHQ+PC9zdmc+" />
+
   <title>Morning Brief — Fortune's Kitchen</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -12,7 +23,12 @@
       background: #0d1117;
       color: #e6edf3;
       min-height: 100vh;
-      padding: 16px;
+      /* Safe-area insets for notch / Dynamic Island / home indicator */
+      padding: env(safe-area-inset-top, 16px) env(safe-area-inset-right, 16px) env(safe-area-inset-bottom, 16px) env(safe-area-inset-left, 16px);
+      padding-top: max(env(safe-area-inset-top, 0px), 20px);
+      padding-bottom: max(env(safe-area-inset-bottom, 0px), 20px);
+      padding-left: 16px;
+      padding-right: 16px;
     }
 
     header {
@@ -42,14 +58,16 @@
     .card {
       background: #161b22;
       border: 1px solid #30363d;
-      border-radius: 12px;
-      padding: 14px;
+      border-radius: 16px;
+      padding: 16px;
+      /* Subtle tap highlight */
+      -webkit-tap-highlight-color: transparent;
     }
 
     .card.full { grid-column: span 2; }
 
     .card h2 {
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: #8b949e;
@@ -69,14 +87,14 @@
     }
 
     /* Weather */
-    #weather-icon { font-size: 2.2rem; line-height: 1; }
+    #weather-icon { font-size: 2.4rem; line-height: 1; }
     #weather-desc { font-size: 0.85rem; margin-top: 4px; color: #c9d1d9; }
 
     /* Calendar */
     #cal-list { list-style: none; }
     #cal-list li {
-      font-size: 0.8rem;
-      padding: 5px 0;
+      font-size: 0.85rem;
+      padding: 7px 0;
       border-bottom: 1px solid #21262d;
       color: #c9d1d9;
     }
@@ -92,53 +110,84 @@
     /* AI Summary */
     #ai-summary {
       font-size: 0.9rem;
-      line-height: 1.55;
+      line-height: 1.6;
       color: #c9d1d9;
       background: #0d1117;
-      border-radius: 8px;
-      padding: 10px;
-      min-height: 60px;
+      border-radius: 10px;
+      padding: 12px;
+      min-height: 64px;
     }
 
-    /* Refresh button */
+    /* Refresh button — large tap target */
     #refresh-btn {
       display: block;
       width: 100%;
       margin-top: 16px;
-      padding: 12px;
+      padding: 16px;
       background: #f0883e;
       color: #0d1117;
-      font-size: 0.9rem;
+      font-size: 1rem;
       font-weight: 700;
       border: none;
-      border-radius: 10px;
+      border-radius: 14px;
       cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    #refresh-btn:active { opacity: 0.8; }
+    #refresh-btn:active { opacity: 0.75; transform: scale(0.98); }
 
     .loading { color: #8b949e; font-style: italic; }
 
-    /* n8n webhook config banner */
+    /* ── Setup banner ── */
     #config-banner {
       background: #161b22;
-      border: 1px dashed #30363d;
-      border-radius: 8px;
-      padding: 10px 12px;
-      margin-bottom: 14px;
-      font-size: 0.75rem;
-      color: #8b949e;
+      border: 1px dashed #f0883e;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
+      color: #c9d1d9;
+      font-size: 0.85rem;
     }
+    #config-banner strong { color: #f0883e; }
     #config-banner a { color: #58a6ff; }
+
     #webhook-url-input {
+      display: block;
       width: 100%;
-      margin-top: 6px;
-      padding: 6px 8px;
+      margin-top: 10px;
+      padding: 12px;
       background: #0d1117;
       border: 1px solid #30363d;
-      border-radius: 6px;
+      border-radius: 10px;
       color: #e6edf3;
+      font-size: 0.85rem;
+      /* Prevent iOS zoom on focus (font-size must be >= 16px to avoid zoom) */
+      font-size: 16px;
+    }
+
+    #save-webhook-btn {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      padding: 14px;
+      background: #58a6ff;
+      color: #0d1117;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    #edit-webhook-btn {
+      background: none;
+      border: none;
+      color: #8b949e;
       font-size: 0.75rem;
+      cursor: pointer;
+      padding: 4px 0;
+      margin-top: 8px;
+      text-decoration: underline;
     }
   </style>
 </head>
@@ -149,30 +198,34 @@
   <span id="clock"></span>
 </header>
 
-<!-- Config banner — hidden once webhook is saved -->
+<!-- Setup banner — hidden once webhook is saved -->
 <div id="config-banner">
-  <strong>Setup:</strong> Paste your n8n Morning Brief webhook URL below and tap Save.
-  <a href="https://app.n8n.cloud/kmo1960" target="_blank">Open n8n →</a>
-  <br/>
-  <input id="webhook-url-input" type="url" placeholder="https://app.n8n.cloud/kmo1960/webhook/..." />
-  <br/><br/>
-  <button id="save-webhook-btn" style="background:#58a6ff;color:#0d1117;border:none;padding:6px 14px;border-radius:6px;font-weight:700;cursor:pointer;">Save Webhook URL</button>
+  <strong>One-time setup:</strong> Paste your n8n webhook URL and tap Save.<br/>
+  <a href="https://app.n8n.cloud/kmo1960" target="_blank">Open n8n to get the URL →</a>
+  <input id="webhook-url-input" type="url" inputmode="url" autocomplete="url"
+         placeholder="https://app.n8n.cloud/kmo1960/webhook/..." />
+  <button id="save-webhook-btn">💾 Save &amp; Load Brief</button>
+</div>
+
+<!-- Edit webhook link shown after setup -->
+<div id="edit-webhook-wrap" style="display:none; text-align:right;">
+  <button id="edit-webhook-btn">⚙️ Change webhook URL</button>
 </div>
 
 <div class="grid">
 
   <!-- Date -->
   <div class="card">
-    <h2>📅 Date</h2>
+    <h2>📅 Today</h2>
     <div class="value" id="date-day">—</div>
-    <div class="sub" id="date-full">Loading…</div>
+    <div class="sub" id="date-full"></div>
   </div>
 
   <!-- Weather -->
   <div class="card">
-    <h2>🌤 Weather — La Quinta</h2>
+    <h2>🌤 La Quinta</h2>
     <div id="weather-icon">—</div>
-    <div id="weather-desc" class="loading">Loading…</div>
+    <div id="weather-desc" class="loading">–</div>
   </div>
 
   <!-- Email -->
@@ -191,14 +244,14 @@
 
   <!-- Calendar -->
   <div class="card full">
-    <h2>📆 Today's Calendar</h2>
-    <ul id="cal-list"><li class="loading">Loading…</li></ul>
+    <h2>📆 Today's Schedule</h2>
+    <ul id="cal-list"><li class="loading">–</li></ul>
   </div>
 
   <!-- AI Summary -->
   <div class="card full">
     <h2>🤖 AI Summary</h2>
-    <div id="ai-summary" class="loading">Waiting for data…</div>
+    <div id="ai-summary" class="loading">Tap Refresh to load your brief.</div>
   </div>
 
 </div>
@@ -232,19 +285,34 @@
     return localStorage.getItem(STORAGE_KEY) || '';
   }
 
+  function showBanner() {
+    document.getElementById('config-banner').style.display = 'block';
+    document.getElementById('edit-webhook-wrap').style.display = 'none';
+  }
+
+  function hideBanner() {
+    document.getElementById('config-banner').style.display = 'none';
+    document.getElementById('edit-webhook-wrap').style.display = 'block';
+  }
+
   function initConfig() {
     const saved = getWebhookUrl();
     if (saved) {
-      document.getElementById('config-banner').style.display = 'none';
       document.getElementById('webhook-url-input').value = saved;
+      hideBanner();
     }
+
     document.getElementById('save-webhook-btn').addEventListener('click', () => {
       const val = document.getElementById('webhook-url-input').value.trim();
       if (val) {
         localStorage.setItem(STORAGE_KEY, val);
-        document.getElementById('config-banner').style.display = 'none';
+        hideBanner();
         loadBrief();
       }
+    });
+
+    document.getElementById('edit-webhook-btn').addEventListener('click', () => {
+      showBanner();
     });
   }
 
@@ -274,7 +342,7 @@
         {
           weather: { icon: "☀️", description: "82°F, Sunny" },
           email:   { unread: 5 },
-          github:  { open_issues: 3 },
+          github:  { open_issues: 3, open_prs: 0 },
           calendar: [
             { time: "9:00 AM", title: "Staff Meeting" },
             ...
