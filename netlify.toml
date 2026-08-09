@@ -1,0 +1,10 @@
+[build]
+  publish = "site"
+  command = ""   # No build step needed — pure static site
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Morning Brief" />
+  <title>☀️ Morning Brief — Fortune's Kitchen</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="logo">☀️</div>
+    <h1>Morning Brief</h1>
+    <p class="subtitle">Fortune's Kitchen &amp; Bar</p>
+  </header>
+
+  <main id="content">
+    <div class="loading">Loading today's briefing…</div>
+  </main>
+
+  <footer>
+    <p>Generated daily at 6 AM PDT by GitHub Actions</p>
+  </footer>
+
+  <script>
+    async function loadAgenda() {
+      const main = document.getElementById('content');
+      try {
+        const res = await fetch('daily_agenda.txt?_=' + Date.now());
+        if (!res.ok) throw new Error('Not found');
+        const text = await res.text();
+        main.innerHTML = renderAgenda(text);
+      } catch (e) {
+        main.innerHTML = '<div class="error">⚠️ Agenda not available yet.<br>Check back after 6 AM PDT.</div>';
+      }
+    }
+
+    function renderAgenda(text) {
+      const lines = text.split('\n');
+      let html = '';
+      let inSection = false;
+      let inEvent = false;
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Section headers
+        if (line.startsWith('📅') || line.startsWith('📰')) {
+          if (inEvent) { html += '</div>'; inEvent = false; }
+          if (inSection) html += '</section>';
+          html += `<section class="card"><h2>${escHtml(line)}</h2>`;
+          inSection = true;
+          i++; // skip dashes
+          continue;
+        }
+
+        // Separator lines — skip
+        if (line.startsWith('===') || line.startsWith('---')) continue;
+
+        // Date header
+        if (line.includes('DAILY BRIEFING')) {
+          const m = line.match(/DAILY BRIEFING — (.+)/);
+          if (m) html += `<div class="date-banner">${escHtml(m[1])}</div>`;
+          continue;
+        }
+
+        // Generated-at footer line
+        if (line.includes('Generated at')) {
+          if (inEvent) { html += '</div>'; inEvent = false; }
+          if (inSection) { html += '</section>'; inSection = false; }
+          html += `<p class="generated">${escHtml(line.trim())}</p>`;
+          continue;
+        }
+
+        // Event time line
+        if (line.includes('⏰')) {
+          if (inEvent) html += '</div>';
+          html += `<div class="event"><p class="event-time">${escHtml(line.trim())}</p>`;
+          inEvent = true;
+          continue;
+        }
+
+        // Location / description inside event
+        if (line.includes('📍') || line.includes('📝')) {
+          html += `<p class="event-detail">${escHtml(line.trim())}</p>`;
+          continue;
+        }
+
+        // Event summary (indented, not a URL, not empty)
+        if (inEvent && line.startsWith('      ') && line.trim() !== '' && !line.trim().startsWith('http')) {
+          html += `<p class="event-summary">${escHtml(line.trim())}</p>`;
+          continue;
+        }
+
+        // Close event on blank line
+        if (inEvent && line.trim() === '') {
+          html += '</div>';
+          inEvent = false;
+          continue;
+        }
+
+        // News headline  "   1. Headline text"
+        const newsMatch = line.match(/^\s+(\d+)\.\s+(.+)/);
+        if (newsMatch) {
+          html += `<div class="headline"><span class="num">${newsMatch[1]}</span><p>${escHtml(newsMatch[2])}</p>`;
+          continue;
+        }
+
+        // News URL line
+        if (line.trim().startsWith('http')) {
+          html += `<a class="news-link" href="${escHtml(line.trim())}" target="_blank" rel="noopener">Read more →</a></div>`;
+          continue;
+        }
+
+        // Empty line after a news item with no URL — close headline div
+        if (line.trim() === '' && html.endsWith('</p>')) {
+          html += '</div>';
+          continue;
+        }
+
+        // "No events" / "No headlines"
+        if (line.includes('No events') || line.includes('No headlines')) {
+          html += `<p class="empty">${escHtml(line.trim())}</p>`;
+        }
+      }
+
+      if (inEvent) html += '</div>';
+      if (inSection) html += '</section>';
+      return html || '<p class="empty">No content available.</p>';
+    }
+
+    function escHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    loadAgenda();
+  </script>
+</body>
+</html>

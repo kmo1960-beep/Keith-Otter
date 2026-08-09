@@ -56,6 +56,9 @@ jobs:
       - name: Combine into daily agenda file
         run: python scripts/build_agenda.py
 
+      - name: Copy agenda to Netlify site folder
+        run: cp agenda/daily_agenda.txt site/daily_agenda.txt
+
       - name: Clean up credentials
         if: always()
         run: rm -f scripts/service_account.json
@@ -64,7 +67,7 @@ jobs:
         run: |
           git config user.name "Daily Agenda Bot"
           git config user.email "actions@github.com"
-          git add agenda/daily_agenda.txt
+          git add agenda/daily_agenda.txt site/daily_agenda.txt
           git diff --cached --quiet || git commit -m "📅 Daily agenda update: $(date +'%Y-%m-%d')"
           git push
 
