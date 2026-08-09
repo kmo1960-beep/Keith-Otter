@@ -86,6 +86,51 @@ This is the order to add them at `app.n8n.cloud/kmo1960` > Credentials.
 
 ---
 
+## Netlify — iPhone Morning Brief
+
+**Date added: 2026-08-09**
+
+The Morning Brief is a static web page hosted on Netlify that delivers a daily summary to your iPhone.
+
+### What it does
+- Displays the morning agenda (weather, calendar, email summary) in a mobile-friendly page
+- Served at a fixed Netlify URL — bookmark it on your iPhone home screen
+- Content is updated by n8n workflows and pushed to the `public/` folder
+
+### How it's set up
+
+| Setting | Value |
+|---|---|
+| Netlify site | Connected to `kmo1960-beep/Keith-Otter` on GitHub |
+| Publish directory | `public/` |
+| Build command | *(none — static files only)* |
+| Config file | `netlify.toml` |
+| Entry page | `public/index.html` |
+
+### netlify.toml (current config)
+```toml
+[build]
+  publish = "public"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+```
+
+### iPhone setup
+1. Open your Netlify site URL in **Safari** on your iPhone
+2. Tap the **Share** button → **Add to Home Screen**
+3. Name it `Morning Brief` and tap **Add**
+4. It will appear as an app icon on your home screen
+5. Open it each morning for your daily summary
+
+### Deploying updates
+- Any push to the `main` branch automatically redeploys via Netlify's GitHub integration
+- n8n can update `public/index.html` content via the GitHub API, triggering a fresh deploy
+
+---
+
 ## Security Rules
 
 1. Never store actual API keys in this repo or any config file
