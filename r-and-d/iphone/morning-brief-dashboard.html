@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Morning Brief — Fortune's Kitchen</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    header h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #f0883e;
+    }
+
+    #clock {
+      font-size: 0.9rem;
+      color: #8b949e;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .card.full { grid-column: span 2; }
+
+    .card h2 {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #8b949e;
+      margin-bottom: 8px;
+    }
+
+    .card .value {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #f0883e;
+    }
+
+    .card .sub {
+      font-size: 0.75rem;
+      color: #8b949e;
+      margin-top: 2px;
+    }
+
+    /* Weather */
+    #weather-icon { font-size: 2.2rem; line-height: 1; }
+    #weather-desc { font-size: 0.85rem; margin-top: 4px; color: #c9d1d9; }
+
+    /* Calendar */
+    #cal-list { list-style: none; }
+    #cal-list li {
+      font-size: 0.8rem;
+      padding: 5px 0;
+      border-bottom: 1px solid #21262d;
+      color: #c9d1d9;
+    }
+    #cal-list li:last-child { border-bottom: none; }
+    #cal-list .time { color: #f0883e; font-weight: 600; margin-right: 6px; }
+
+    /* Email */
+    #email-count { font-size: 1.6rem; font-weight: 700; color: #58a6ff; }
+
+    /* GitHub */
+    #github-issues { font-size: 1.6rem; font-weight: 700; color: #3fb950; }
+
+    /* AI Summary */
+    #ai-summary {
+      font-size: 0.9rem;
+      line-height: 1.55;
+      color: #c9d1d9;
+      background: #0d1117;
+      border-radius: 8px;
+      padding: 10px;
+      min-height: 60px;
+    }
+
+    /* Refresh button */
+    #refresh-btn {
+      display: block;
+      width: 100%;
+      margin-top: 16px;
+      padding: 12px;
+      background: #f0883e;
+      color: #0d1117;
+      font-size: 0.9rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    #refresh-btn:active { opacity: 0.8; }
+
+    .loading { color: #8b949e; font-style: italic; }
+
+    /* n8n webhook config banner */
+    #config-banner {
+      background: #161b22;
+      border: 1px dashed #30363d;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+      font-size: 0.75rem;
+      color: #8b949e;
+    }
+    #config-banner a { color: #58a6ff; }
+    #webhook-url-input {
+      width: 100%;
+      margin-top: 6px;
+      padding: 6px 8px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      color: #e6edf3;
+      font-size: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>☀️ Morning Brief</h1>
+  <span id="clock"></span>
+</header>
+
+<!-- Config banner — hidden once webhook is saved -->
+<div id="config-banner">
+  <strong>Setup:</strong> Paste your n8n Morning Brief webhook URL below and tap Save.
+  <a href="https://app.n8n.cloud/kmo1960" target="_blank">Open n8n →</a>
+  <br/>
+  <input id="webhook-url-input" type="url" placeholder="https://app.n8n.cloud/kmo1960/webhook/..." />
+  <br/><br/>
+  <button id="save-webhook-btn" style="background:#58a6ff;color:#0d1117;border:none;padding:6px 14px;border-radius:6px;font-weight:700;cursor:pointer;">Save Webhook URL</button>
+</div>
+
+<div class="grid">
+
+  <!-- Date -->
+  <div class="card">
+    <h2>📅 Date</h2>
+    <div class="value" id="date-day">—</div>
+    <div class="sub" id="date-full">Loading…</div>
+  </div>
+
+  <!-- Weather -->
+  <div class="card">
+    <h2>🌤 Weather — La Quinta</h2>
+    <div id="weather-icon">—</div>
+    <div id="weather-desc" class="loading">Loading…</div>
+  </div>
+
+  <!-- Email -->
+  <div class="card">
+    <h2>📧 Unread Email</h2>
+    <div id="email-count" class="loading">—</div>
+    <div class="sub">Gmail inbox</div>
+  </div>
+
+  <!-- GitHub -->
+  <div class="card">
+    <h2>🐙 GitHub</h2>
+    <div id="github-issues" class="loading">—</div>
+    <div class="sub" id="github-sub">Open issues</div>
+  </div>
+
+  <!-- Calendar -->
+  <div class="card full">
+    <h2>📆 Today's Calendar</h2>
+    <ul id="cal-list"><li class="loading">Loading…</li></ul>
+  </div>
+
+  <!-- AI Summary -->
+  <div class="card full">
+    <h2>🤖 AI Summary</h2>
+    <div id="ai-summary" class="loading">Waiting for data…</div>
+  </div>
+
+</div>
+
+<button id="refresh-btn">🔄 Refresh Brief</button>
+
+<script>
+  /* ── Clock ── */
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('clock').textContent =
+      now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  /* ── Date ── */
+  function updateDate() {
+    const now = new Date();
+    document.getElementById('date-day').textContent =
+      now.toLocaleDateString('en-US', { weekday: 'short' });
+    document.getElementById('date-full').textContent =
+      now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  }
+  updateDate();
+
+  /* ── Webhook config ── */
+  const STORAGE_KEY = 'morning_brief_webhook';
+
+  function getWebhookUrl() {
+    return localStorage.getItem(STORAGE_KEY) || '';
+  }
+
+  function initConfig() {
+    const saved = getWebhookUrl();
+    if (saved) {
+      document.getElementById('config-banner').style.display = 'none';
+      document.getElementById('webhook-url-input').value = saved;
+    }
+    document.getElementById('save-webhook-btn').addEventListener('click', () => {
+      const val = document.getElementById('webhook-url-input').value.trim();
+      if (val) {
+        localStorage.setItem(STORAGE_KEY, val);
+        document.getElementById('config-banner').style.display = 'none';
+        loadBrief();
+      }
+    });
+  }
+
+  /* ── Load brief from n8n webhook ── */
+  async function loadBrief() {
+    const url = getWebhookUrl();
+    if (!url) return;
+
+    // Show loading states
+    ['email-count', 'github-issues', 'ai-summary'].forEach(id => {
+      document.getElementById(id).textContent = '…';
+    });
+    document.getElementById('cal-list').innerHTML = '<li class="loading">Loading…</li>';
+    document.getElementById('weather-desc').textContent = 'Loading…';
+    document.getElementById('weather-icon').textContent = '—';
+
+    try {
+      const res = await fetch(url, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+
+      /* Expected n8n response shape:
+        {
+          weather: { icon: "☀️", description: "82°F, Sunny" },
+          email:   { unread: 5 },
+          github:  { open_issues: 3 },
+          calendar: [
+            { time: "9:00 AM", title: "Staff Meeting" },
+            ...
+          ],
+          summary: "Good morning Keith! You have 3 meetings and 5 unread emails. Focus: staff payroll today."
+        }
+      */
+
+      if (data.weather) {
+        document.getElementById('weather-icon').textContent = data.weather.icon || '🌤';
+        document.getElementById('weather-desc').textContent = data.weather.description || '';
+      }
+
+      if (data.email) {
+        document.getElementById('email-count').textContent = data.email.unread ?? '—';
+      }
+
+      if (data.github) {
+        document.getElementById('github-issues').textContent = data.github.open_issues ?? '—';
+        document.getElementById('github-sub').textContent =
+          `${data.github.open_prs ?? 0} open PRs`;
+      }
+
+      if (data.calendar && data.calendar.length > 0) {
+        document.getElementById('cal-list').innerHTML = data.calendar
+          .map(e => `<li><span class="time">${e.time}</span>${e.title}</li>`)
+          .join('');
+      } else {
+        document.getElementById('cal-list').innerHTML = '<li>No events today 🎉</li>';
+      }
+
+      if (data.summary) {
+        document.getElementById('ai-summary').textContent = data.summary;
+        document.getElementById('ai-summary').classList.remove('loading');
+      }
+
+    } catch (err) {
+      document.getElementById('ai-summary').textContent =
+        `⚠️ Could not reach n8n webhook. ${err.message}`;
+      document.getElementById('ai-summary').classList.add('loading');
+    }
+  }
+
+  /* ── Init ── */
+  initConfig();
+  if (getWebhookUrl()) loadBrief();
+
+  document.getElementById('refresh-btn').addEventListener('click', loadBrief);
+</script>
+
+</body>
+</html>
