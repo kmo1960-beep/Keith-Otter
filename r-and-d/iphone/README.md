@@ -39,10 +39,21 @@ The **Respond to Webhook** node returns JSON shaped like:
 }
 ```
 
-### Step 2 — Open the Dashboard on iPhone
-1. Copy `morning-brief-dashboard.html` to iCloud Drive or host it on GitHub Pages
-2. Open in Safari → tap Share → **Add to Home Screen**
-3. Name it **Morning Brief** and pick the GitHub icon
+### Step 2 — Put the File on Your iPhone via iCloud Drive
+
+**On your Mac or PC:**
+1. Open **iCloud Drive** in Finder (Mac) or iCloud.com (any browser)
+2. Drag `morning-brief-dashboard.html` into a folder — e.g. `iCloud Drive / Morning Brief /`
+
+**On your iPhone:**
+1. Open the **Files** app
+2. Tap **iCloud Drive** → find `morning-brief-dashboard.html`
+3. Tap the file — Safari opens it automatically
+4. Tap the **Share** button (box with arrow) → **Add to Home Screen**
+5. Name it **Morning Brief**
+6. For the icon: tap the icon preview → **Choose Photo** → pick any GitHub or restaurant logo from your Camera Roll
+
+> **Tip:** After you save the webhook URL in Step 3, you never need to go back to Files. Just tap the Home Screen icon every morning.
 
 ### Step 3 — Connect the Webhook
 When you first open the dashboard, a setup banner appears.
