@@ -1,0 +1,40 @@
+name: Copilot Setup Steps
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+  pull_request:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+
+jobs:
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install LibreOffice and add-on components
+        run: |
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            libreoffice \
+            libreoffice-java-common \
+            libreoffice-script-provider-python \
+            libreoffice-script-provider-beanshell \
+            libreoffice-help-en-us \
+            libreoffice-l10n-en-us \
+            hunspell-en-us \
+            hyphen-en-us \
+            mythes-en-us
+
+      - name: Verify LibreOffice install
+        run: |
+          libreoffice --version
+          unopkg list --shared || true
