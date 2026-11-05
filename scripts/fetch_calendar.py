@@ -33,6 +33,23 @@ time_min = start.isoformat()
 time_max = end.isoformat()
 
 # ── Auth ───────────────────────────────────────────────────────────────────────
+# Gracefully skip if credentials file is missing, empty, or invalid JSON
+def _credentials_available():
+    if not os.path.exists(SERVICE_ACCOUNT):
+        return False
+    try:
+        with open(SERVICE_ACCOUNT, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return bool(data)
+    except (json.JSONDecodeError, ValueError):
+        return False
+
+if not _credentials_available():
+    print("Google Calendar credentials not configured — writing empty events file.")
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+        json.dump([], f)
+    raise SystemExit(0)
+
 credentials = service_account.Credentials.from_service_account_file(
     SERVICE_ACCOUNT, scopes=SCOPES
 )
