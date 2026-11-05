@@ -1,0 +1,31 @@
+{
+  "purpose": "Single shareable summary for email handoff",
+  "repo": "kmo1960-beep/Keith-Otter",
+  "share_note": "Config mapping only. No keys or tokens are stored in this repository.",
+  "service_coverage": {
+    "email": "Gmail OAuth2",
+    "weather": "Weather provider API via n8n credential",
+    "ai": [
+      "OpenAI",
+      "Anthropic"
+    ],
+    "google_calendar": "Google Calendar credential",
+    "my_drive": "Google Drive credential",
+    "repo": "GitHub credential for repository automation"
+  },
+  "source_of_truth_files": [
+    "/README.md",
+    "/production/shared/master.json",
+    "/production/n8n/config.json",
+    "/production/openai/config.json",
+    "/production/openai/mcp_config.json",
+    "/production/anthropic/config.json",
+    "/production/copilot/config.json"
+  ],
+  "email_share_steps": [
+    "Clone or download this repository",
+    "Review README.md and SETUP_GUIDE.md",
+    "Use production/n8n/config.json credential names in n8n",
+    "Keep all API keys in n8n credential vault only"
+  ]
+}
