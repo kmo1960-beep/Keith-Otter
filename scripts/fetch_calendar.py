@@ -33,6 +33,23 @@ time_min = start.isoformat()
 time_max = end.isoformat()
 
 # ── Auth ───────────────────────────────────────────────────────────────────────
+# If the service account file is missing or empty, write an empty events file
+# and exit cleanly so the workflow does not fail when credentials are not set.
+if not os.path.exists(SERVICE_ACCOUNT) or os.path.getsize(SERVICE_ACCOUNT) == 0:
+    print("No service account credentials found – writing empty calendar events file.")
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+        json.dump([], f)
+    raise SystemExit(0)
+
+try:
+    with open(SERVICE_ACCOUNT, "r", encoding="utf-8") as _f:
+        json.load(_f)
+except json.JSONDecodeError:
+    print("Service account file is not valid JSON – writing empty calendar events file.")
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+        json.dump([], f)
+    raise SystemExit(0)
+
 credentials = service_account.Credentials.from_service_account_file(
     SERVICE_ACCOUNT, scopes=SCOPES
 )
